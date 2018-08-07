@@ -4,7 +4,7 @@ from skimage import transform
 from skimage.io import imread, imsave
 import pygame
 import time
- 
+
 class Apple:
 
     apple_list = []
@@ -74,8 +74,8 @@ class Player:
         self.direction = 3 
  
     def draw(self, surface, image):
-        for i in range(0,self.length-1):
-            surface.blit(image,(self.snake[i][0],self.snake[i][1])) 
+        for i in self.snake:
+            surface.blit(image,(i[0], i[1])) 
  
 class Game:
     def isCollision(self, head, target, self_eat = 0):
@@ -92,10 +92,6 @@ class Game:
             return True
             
         return False
-
-'''
-width = pygame.display.Info().current_w
-'''
  
 class App:
  
@@ -119,6 +115,8 @@ class App:
         pygame.init()
         self._display_surf = pygame.display.set_mode((0,0), pygame.HWSURFACE)
         pygame.display.toggle_fullscreen()
+
+        Player.length = Player.length - 5 # Bo tak.
  
         pygame.display.set_caption('Pygame pythonspot.com example')
         self._running = True
@@ -141,9 +139,11 @@ class App:
         # does snake eat apple?
 
         if self.game.isCollision(self.player.snake[0], self.apple.apple_list):
-            self.apple.apple_list[0][0] = randint(2,9) * self.step_size
-            self.apple.apple_list[0][1] = randint(2,9) * self.step_size
+            screen_width, screen_height = pygame.display.Info().current_w, pygame.display.Info().current_h
+            self.apple.apple_list[0][0] = randint(0,(int(screen_width/100)-1)) * self.step_size
+            self.apple.apple_list[0][1] = randint(0,(int(screen_height/100)-1)) * self.step_size
             self.player.length = self.player.length + 1
+            Player.length = Player.length + 1
  
  
         # does snake collide with itself?
@@ -154,9 +154,15 @@ class App:
         pass
  
     def on_render(self):
+        screen_width, screen_height = pygame.display.Info().current_w, pygame.display.Info().current_h
         self._display_surf.fill((0,0,0))
         self.player.draw(self._display_surf, self._image_surf)
         self.apple.draw(self._display_surf, self._apple_surf)
+
+        font=pygame.font.Font(None,60)
+        scoretext=font.render("Score: " + str(Player.length), 1,(255,255,255))
+        self._display_surf.blit(scoretext, (10, screen_height-70))
+
         pygame.display.flip()
  
     def on_cleanup(self):
@@ -188,7 +194,7 @@ class App:
             self.on_loop()
             self.on_render()
  
-            time.sleep (50.0 / 1000.0)
+            time.sleep (50.0 / 1000.0);
         self.on_cleanup()
  
 if __name__ == "__main__" :
