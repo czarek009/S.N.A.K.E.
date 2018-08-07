@@ -188,7 +188,7 @@ class App:
             self.on_loop()
             self.on_render()
  
-            time.sleep (50.0 / 1000.0);
+            time.sleep (50.0 / 1000.0)
         self.on_cleanup()
  
 if __name__ == "__main__" :
