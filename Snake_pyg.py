@@ -81,7 +81,21 @@ class Game:
     def isCollision(self, head, target, self_eat = 0):
         if head in target:
             return True
+
+        width = pygame.display.Info().current_w
+        height = pygame.display.Info().current_h
+
+        if head[0] < 0 or head[0]>width:
+            return True
+
+        if head[1]<0 or head[1]>height:
+            return True
+            
         return False
+
+'''
+width = pygame.display.Info().current_w
+'''
  
 class App:
  
@@ -156,16 +170,16 @@ class App:
             pygame.event.pump()
             keys = pygame.key.get_pressed() 
  
-            if (keys[K_RIGHT]):
+            if (keys[K_RIGHT]) and self.player.direction!=1:
                 self.player.moveRight()
  
-            if (keys[K_LEFT]):
+            if (keys[K_LEFT]) and self.player.direction!=0:
                 self.player.moveLeft()
  
-            if (keys[K_UP]):
+            if (keys[K_UP]) and self.player.direction!=3:
                 self.player.moveUp()
  
-            if (keys[K_DOWN]):
+            if (keys[K_DOWN]) and self.player.direction!=2:
                 self.player.moveDown()
  
             if (keys[K_ESCAPE]):
