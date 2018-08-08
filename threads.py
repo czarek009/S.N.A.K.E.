@@ -1,9 +1,10 @@
 from queue import Queue
 import threading
-from Net_Snake_pyg import playing_game
+from silent_net_snake import playing_game
 from network import generate_networks, args
+import numpy as np
 
-args2 = {'hm_threads': 10}
+args2 = {'hm_threads': 1}
 
 q = Queue()
 
@@ -11,8 +12,18 @@ def exampleJob(pack):
 
     name = pack[0]
     network = pack[1]
+    print('!!!!!!')
+    false_input = [0,0,1,0,0,1]
+    false_input = np.reshape(false_input, newshape=(1,1,6))
+    pack = generate_networks(args)
+    #print(network.summary())
+    prediction = network.predict(false_input)
+    print(prediction)
+    result = np.argmax(prediction,2)
+    print(result)
 
     game_result = playing_game(network,100)
+    print('--------------------')
     save_lock = threading.Lock()
     with save_lock:
         with open('/results_log/log.txt', 'a') as f:
@@ -47,4 +58,4 @@ def threads(args_dict):
     q.join()
 
 if __name__ == '__main__':
-    print('!!!!!!!!!!')
+    threads(args2)
