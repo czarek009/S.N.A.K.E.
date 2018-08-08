@@ -142,6 +142,9 @@ class App:
             screen_width, screen_height = pygame.display.Info().current_w, pygame.display.Info().current_h
             self.apple.apple_list[0][0] = randint(0,(int(screen_width/100)-1)) * self.step_size
             self.apple.apple_list[0][1] = randint(0,(int(screen_height/100)-1)) * self.step_size
+            while self.game.isCollision(self.apple.apple_list[0], self.player.snake):
+                self.apple.apple_list[0][0] = randint(0,(int(screen_width/100)-1)) * self.step_size
+                self.apple.apple_list[0][1] = randint(0,(int(screen_height/100)-1)) * self.step_size
             self.player.length = self.player.length + 1
             Player.length = Player.length + 1
  
