@@ -169,7 +169,88 @@ class App:
  
     def on_cleanup(self):
         pygame.quit()
- 
+
+    def get_input(self):
+        out = [0, 0, 0, 0, 0, 0]
+        sh = self.player.snake[0]
+        dire = self.player.direction
+        appl=self.apple.apple_list[0]
+        mod = [[sh[0]+100, sh[1]], [sh[0], sh[1]+100], [sh[0]-100, sh[1]], [sh[0], sh[1]-100]]
+        
+        if self.game.isCollision(mod[(dire-1)%4], self.player.snake[:-1]):
+            out[0]=1
+        else:
+            out[0]=0
+        
+        if self.game.isCollision(mod[dire], self.player.snake[:-1]):
+            out[1]=1
+        else:
+            out[1]=0
+        
+        if self.game.isCollision(mod[(dire+1)%4], self.player.snake[:-1]):
+            out[2]=1
+        else:
+            out[2]=0
+
+        if dire == 3:
+            if sh[0]==appl[0] and appl[1]<sh[1]:
+                out[4]=1
+            else:
+                out[4]=0
+            
+            if sh[1]==appl[1]:
+                if sh[0]>appl[0]:
+                    out[3]=1
+                    out[5]=0
+                else:
+                    out[3]=0
+                    out[5]=1
+
+        if dire == 1:
+            if sh[0]==appl[0] and appl[1]>sh[1]:
+                out[4]=1
+            else:
+                out[4]=0
+            
+            if sh[1]==appl[1]:
+                if sh[0]>appl[0]:
+                    out[3]=0
+                    out[5]=1
+                else:
+                    out[3]=1
+                    out[5]=0
+
+        if dire == 0:
+            if sh[1]==appl[1] and appl[0]>sh[0]:
+                out[4]=1
+            else:
+                out[4]=0
+            
+            if sh[0]==appl[0]:
+                if sh[1]>appl[1]:
+                    out[3]=1
+                    out[5]=0
+                else:
+                    out[3]=0
+                    out[5]=1
+
+        if dire == 2:
+            if sh[1]==appl[1] and appl[0]<sh[0]:
+                out[4]=1
+            else:
+                out[4]=0
+            
+            if sh[0]==appl[0]:
+                if sh[1]>appl[1]:
+                    out[3]=0
+                    out[5]=1
+                else:
+                    out[3]=1
+                    out[5]=0
+        
+
+        return out    
+
     def on_execute(self):
         if self.on_init() == False:
             self._running = False
@@ -178,7 +259,7 @@ class App:
             pygame.event.pump()
             keys = pygame.key.get_pressed() 
 
-            input_data = get_input()
+            input_data = self.get_input()
             result = self.network.predict(input_data)
             
             if result==1:
