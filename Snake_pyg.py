@@ -50,11 +50,11 @@ class Player:
             # update position of head of snake
             if self.direction == 0:
                 self.snake[0][0] = self.snake[0][0] + self.step
-            if self.direction == 1:
-                self.snake[0][0] = self.snake[0][0] - self.step
             if self.direction == 2:
-                self.snake[0][1] = self.snake[0][1] - self.step
+                self.snake[0][0] = self.snake[0][0] - self.step
             if self.direction == 3:
+                self.snake[0][1] = self.snake[0][1] - self.step
+            if self.direction == 1:
                 self.snake[0][1] = self.snake[0][1] + self.step
 
             #print(self.snake)
@@ -65,13 +65,13 @@ class Player:
         self.direction = 0
  
     def moveLeft(self):
-        self.direction = 1
- 
-    def moveUp(self):
         self.direction = 2
  
+    def moveUp(self):
+        self.direction = 3
+ 
     def moveDown(self):
-        self.direction = 3 
+        self.direction = 1
  
     def draw(self, surface, image):
         for i in self.snake:
@@ -94,13 +94,13 @@ class Game:
         return False
  
 class App:
- 
+    
+    score = 0
     windowWidth = 800
     windowHeight = 800
     player = 0
     apple = 0
     step_size = 100
-    score = 0
  
     def __init__(self, step_size):
         self._running = True
@@ -111,7 +111,6 @@ class App:
         self.game = Game()
         self.player = Player(5, self.step_size) 
         self.apple = Apple(5,5, self.step_size)
-        self.score = 0
  
     def on_init(self):
         pygame.init()
@@ -145,13 +144,17 @@ class App:
             while self.game.isCollision(self.apple.apple_list[0], self.player.snake):
                 self.apple.apple_list[0][0] = randint(0,(int(screen_width/100)-1)) * self.step_size
                 self.apple.apple_list[0][1] = randint(0,(int(screen_height/100)-1)) * self.step_size
-            self.player.length += 1
-            self.score+=1
+            self.player.length = self.player.length + 1
+            self.score = self.score + 1
+ 
  
         # does snake collide with itself?
         if self.game.isCollision(self.player.snake[0], self.player.snake[1:], self_eat=1):
             print("You lose! Collision")
-            self._running =  False
+            #print(self.player.snake[0])
+            #print(self.get_input())
+            exit(0)
+ 
         pass
  
     def on_render(self):
@@ -163,6 +166,9 @@ class App:
         font=pygame.font.Font(None,60)
         scoretext=font.render("Score: " + str(self.score), 1,(255,255,255))
         self._display_surf.blit(scoretext, (10, screen_height-70))
+
+        #input_text=font.render(str(self.get_input()), 1, (255,255,255))
+        #self._display_surf.blit(input_text, (400, screen_height-70))
 
         pygame.display.flip()
  
@@ -176,18 +182,20 @@ class App:
         while( self._running ):
             pygame.event.pump()
             keys = pygame.key.get_pressed() 
- 
-            if (keys[K_RIGHT]) and self.player.direction!=1:
+
+            
+            if (keys[K_RIGHT]) and self.player.direction!=2:
                 self.player.moveRight()
  
             if (keys[K_LEFT]) and self.player.direction!=0:
                 self.player.moveLeft()
  
-            if (keys[K_UP]) and self.player.direction!=3:
+            if (keys[K_UP]) and self.player.direction!=1:
                 self.player.moveUp()
  
-            if (keys[K_DOWN]) and self.player.direction!=2:
+            if (keys[K_DOWN]) and self.player.direction!=3:
                 self.player.moveDown()
+            
  
             if (keys[K_ESCAPE]):
                 self._running = False
@@ -197,6 +205,88 @@ class App:
  
             time.sleep (50.0 / 1000.0);
         self.on_cleanup()
+
+    def get_input(self):
+        out = [0, 0, 0, 0, 0, 0]
+        sh = self.player.snake[0]
+        dire = self.player.direction
+        appl=self.apple.apple_list[0]
+        mod = [[sh[0]+100, sh[1]], [sh[0], sh[1]+100], [sh[0]-100, sh[1]], [sh[0], sh[1]-100]]
+        
+        if self.game.isCollision(mod[(dire-1)%4], self.player.snake[:-1]):
+            out[0]=1
+        else:
+            out[0]=0
+        
+        if self.game.isCollision(mod[dire], self.player.snake[:-1]):
+            out[1]=1
+        else:
+            out[1]=0
+        
+        if self.game.isCollision(mod[(dire+1)%4], self.player.snake[:-1]):
+            out[2]=1
+        else:
+            out[2]=0
+
+        if dire == 3:
+            if sh[0]==appl[0] and appl[1]<sh[1]:
+                out[4]=1
+            else:
+                out[4]=0
+            
+            if sh[1]==appl[1]:
+                if sh[0]>appl[0]:
+                    out[3]=1
+                    out[5]=0
+                else:
+                    out[3]=0
+                    out[5]=1
+
+        if dire == 1:
+            if sh[0]==appl[0] and appl[1]>sh[1]:
+                out[4]=1
+            else:
+                out[4]=0
+            
+            if sh[1]==appl[1]:
+                if sh[0]>appl[0]:
+                    out[3]=0
+                    out[5]=1
+                else:
+                    out[3]=1
+                    out[5]=0
+
+        if dire == 0:
+            if sh[1]==appl[1] and appl[0]>sh[0]:
+                out[4]=1
+            else:
+                out[4]=0
+            
+            if sh[0]==appl[0]:
+                if sh[1]>appl[1]:
+                    out[3]=1
+                    out[5]=0
+                else:
+                    out[3]=0
+                    out[5]=1
+
+        if dire == 2:
+            if sh[1]==appl[1] and appl[0]<sh[0]:
+                out[4]=1
+            else:
+                out[4]=0
+            
+            if sh[0]==appl[0]:
+                if sh[1]>appl[1]:
+                    out[3]=0
+                    out[5]=1
+                else:
+                    out[3]=1
+                    out[5]=0
+        
+
+        return out    
+        
  
 if __name__ == "__main__" :
     theApp = App(100)
