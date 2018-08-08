@@ -91,6 +91,7 @@ class App:
     apple = 0
     step_size = 100
     network = 0
+    score = 0
  
     def __init__(self, network, step_size):
         self._running = True
@@ -100,13 +101,12 @@ class App:
         self._apple_surf = None
         self.step_size = step_size
         self.game = Game()
-        self.player = Player(5, self.step_size) 
+        self.player = Player(5, self.step_size)
+        self.score = 0
         self.apple = Apple(5,5, self.step_size)
  
     def on_init(self):
         pygame.init()
-
-        Player.length = Player.length - 5 # Bo tak.
  
         self._running = True
  
@@ -126,8 +126,8 @@ class App:
             while self.game.isCollision(self.apple.apple_list[0], self.player.snake):
                 self.apple.apple_list[0][0] = randint(0,(int(screen_width/100)-1)) * self.step_size
                 self.apple.apple_list[0][1] = randint(0,(int(screen_height/100)-1)) * self.step_size
-            self.player.length = self.player.length + 1
-            Player.length = Player.length + 1
+            self.player.length +=1
+            self.score+=1
  
  
         # does snake collide with itself?
@@ -135,7 +135,6 @@ class App:
             self._running=False
  
         pass
-
  
     def on_cleanup(self):
         pygame.quit()
@@ -155,6 +154,7 @@ class App:
             if result == 2:
                 self.player.moveLeft()
  
+
             self.on_loop()
  
             time.sleep (50.0 / 1000.0)
