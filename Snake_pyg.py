@@ -100,6 +100,7 @@ class App:
     player = 0
     apple = 0
     step_size = 100
+    score = 0
  
     def __init__(self, step_size):
         self._running = True
@@ -110,13 +111,12 @@ class App:
         self.game = Game()
         self.player = Player(5, self.step_size) 
         self.apple = Apple(5,5, self.step_size)
+        self.score = 0
  
     def on_init(self):
         pygame.init()
         self._display_surf = pygame.display.set_mode((0,0), pygame.HWSURFACE)
         pygame.display.toggle_fullscreen()
-
-        Player.length = Player.length - 5 # Bo tak.
  
         pygame.display.set_caption('Pygame pythonspot.com example')
         self._running = True
@@ -145,15 +145,13 @@ class App:
             while self.game.isCollision(self.apple.apple_list[0], self.player.snake):
                 self.apple.apple_list[0][0] = randint(0,(int(screen_width/100)-1)) * self.step_size
                 self.apple.apple_list[0][1] = randint(0,(int(screen_height/100)-1)) * self.step_size
-            self.player.length = self.player.length + 1
-            Player.length = Player.length + 1
- 
+            self.player.length += 1
+            self.score+=1
  
         # does snake collide with itself?
         if self.game.isCollision(self.player.snake[0], self.player.snake[1:], self_eat=1):
             print("You lose! Collision")
-            exit(0)
- 
+            self._running =  False
         pass
  
     def on_render(self):
@@ -163,7 +161,7 @@ class App:
         self.apple.draw(self._display_surf, self._apple_surf)
 
         font=pygame.font.Font(None,60)
-        scoretext=font.render("Score: " + str(Player.length), 1,(255,255,255))
+        scoretext=font.render("Score: " + str(self.score), 1,(255,255,255))
         self._display_surf.blit(scoretext, (10, screen_height-70))
 
         pygame.display.flip()
