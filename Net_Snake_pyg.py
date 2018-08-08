@@ -51,11 +51,11 @@ class Player:
             # update position of head of snake
             if self.direction == 0:
                 self.snake[0][0] = self.snake[0][0] + self.step
-            if self.direction == 1:
-                self.snake[0][0] = self.snake[0][0] - self.step
             if self.direction == 2:
-                self.snake[0][1] = self.snake[0][1] - self.step
+                self.snake[0][0] = self.snake[0][0] - self.step
             if self.direction == 3:
+                self.snake[0][1] = self.snake[0][1] - self.step
+            if self.direction == 1:
                 self.snake[0][1] = self.snake[0][1] + self.step
 
             #print(self.snake)
@@ -194,8 +194,17 @@ class App:
             self.on_render()
  
             time.sleep (50.0 / 1000.0)
+
         self.on_cleanup()
+        return self.score
+
+def playing_game(network, step):
+    theApp = App(network, step)
+    result = theApp.on_execute()
+    return result
  
+'''
 if __name__ == "__main__" :
     theApp = App(100)
     theApp.on_execute()
+'''
