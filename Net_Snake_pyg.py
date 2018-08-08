@@ -181,10 +181,10 @@ class App:
             input_data = get_input()
             result = self.network.predict(input_data)
             
-            if result==1 and self.player.direction!=1:
+            if result==1:
                 self.player.moveRight()
  
-            if result == 2 and self.player.direction!=0:
+            if result == 2:
                 self.player.moveLeft()
  
             if (keys[K_ESCAPE]):
